@@ -11,6 +11,8 @@
 		now: undefined,
 		delta: undefined,
 		then: Date.now(),
+		width: 1000,
+		height: 600,
 		init: function () {
 			self.canvas = document.getElementById('canvas');
 			self.context = canvas.getContext('2d');
@@ -44,6 +46,8 @@
 		render: function () {
 			var i = 0, len = 0;
 
+			self.context.clearRect(0, 0, self.width, self.height);
+
 			self.board.render(self.context);
 
 			for (i = 0, len = self.points.length; i < len; i++) {
@@ -72,19 +76,8 @@
 			self.update(self.delta / 1000);
 
 			self.requestAnimationFrame(function() {
-				if (!self.isGameOver) {
-					self.start();
-				}
-				else {
-					// self.showGameOver();
-				}
+				self.start();
 			});
-
-
-			// setInterval(function() {
-			// 	self.update(m);
-			// 	self.render();
-			// }, 10);	
 		},
 		requestAnimationFrame: function (func) {
 			var requestAnimationFrame;
