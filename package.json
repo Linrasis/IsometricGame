@@ -1,0 +1,9 @@
+{
+	"private": true,
+	"devDependencies": {
+		"gulp": "~3.8.8",
+		"gulp-jshint": "~1.8.5",
+		"gulp-concat": "~2.4.1",
+		"gulp-sass": "~1.0.0"
+	}
+}
