@@ -2,28 +2,27 @@
 	'use strict';
 
 	global.Entities.Point = new Class({
-		x: 5,
-		y: 5,
 		width: 32,
 		height: 32,
+		speed: 16,
+		imageObjects: [],
 		images: [ 'assets/images/point.png', 'assets/images/point-shadow.png' ],
-		imageObject: undefined,
-		imageShadowObject: undefined,
 		init: function() {
-			this.imageObject = new Image();
-			this.imageShadowObject = new Image();
-		},
-		render: function(context) {
-			var position = this.calculatePosition();
+			this.setPositionIndexes(5, 5);
+			this.prepareIndexesToPosition();
 
-			this.imageObject.src = this.images[0];
-			context.drawImage(this.imageObject, position[0], position[1]);
+			this.parent.init.call(this);
 		},
-		renderShadow: function(context) {
-			var position = this.calculatePosition();
+		draw: function(context) {
+			this.prepareIndexesToPosition();
+			this.parent.draw.call(this, context);
+		},
+		drawShadow: function(context) {
+			var that = this; 
+			this.setImageIndex(1);
+			that.parent.draw.call(that, context);
+			that.setImageIndex(0);
 
-			this.imageShadowObject.src = this.images[1];
-			context.drawImage(this.imageShadowObject, position[0], position[1]);
 		}
 	}, global.Entities.Entity);
 })(this);

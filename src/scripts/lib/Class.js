@@ -3,7 +3,7 @@
 
     if (typeof define === 'function' && define.amd) {
         define([], factory);
-    } 
+    }
     else {
         global.Class = factory();
     }
@@ -36,10 +36,8 @@
 			var SubClass = function () {};
 			SubClass.prototype = parent.prototype;
 			Class.prototype = new SubClass();
+			Class.prototype.parent = new SubClass();
 		}
-
-		Class.prototype.parent = Class;
-		Class.__super__ = Class.__proto__;
 
 		Class.extend = function (obj) {
 			for (var i in obj) {
