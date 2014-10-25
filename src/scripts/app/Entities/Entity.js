@@ -7,6 +7,7 @@
 		b: 0,	// the index of column in the vertical for object
 		x: 0,	// exact coordinate of the point x on the plane for object
 		y: 0,	// exact coordinate of the point y on the plane for object
+		z: 0,	// exact coordinate of the point z on the plane for object
 		width: undefined,	// width of object
 		height: undefined,	// height of object
 		speed: 5,	// speed of object
@@ -20,7 +21,6 @@
 		},
 		setImageIndex: function (index) {
 			if (index != this.imageIndex && this.images[index]) {
-
 				if (!this.imageObjects[index]) {
 					this.imageObjects[index] = new Image();
 
@@ -60,7 +60,7 @@
 			b = b || this.b;
 
 			var x = parseFloat((a - b) * this.width) + 500;
-			var y = parseFloat((a + b) * this.height / 2) + this.height;
+			var y = parseFloat((a + b) * this.height / 2) + this.height - (this.z || 0);
 
 			this.setPosition(x, y);
 		}

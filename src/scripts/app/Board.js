@@ -22,7 +22,9 @@
 			self.player = new global.Entities.Player();
 
 			document.addEventListener("keydown", function (e) {
-				self.keysDown[e.keyCode] = true;
+				if (typeof self.keysDown[e.keyCode] === 'undefined') {
+					self.keysDown[e.keyCode] = true;
+				}
 			}, false);
 
 			document.addEventListener("keyup", function (e) {
@@ -30,9 +32,9 @@
 			}, false);
 		},
 		update: function (m) {
-			if (self.KEYS.SPACE in self.keysDown) {
+			if (self.KEYS.SPACE in self.keysDown && self.keysDown[self.KEYS.SPACE]) {
 				self.player.shoot(m);
-				delete self.keysDown[self.KEYS.SPACE];
+				self.keysDown[self.KEYS.SPACE] = false;
 			}
 			if (self.KEYS.UP in self.keysDown) {
 				self.player.moveUp(m);

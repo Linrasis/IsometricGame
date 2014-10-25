@@ -146,6 +146,7 @@ if (!Object.toType) {
 		b: 0,	// the index of column in the vertical for object
 		x: 0,	// exact coordinate of the point x on the plane for object
 		y: 0,	// exact coordinate of the point y on the plane for object
+		z: 0,	// exact coordinate of the point z on the plane for object
 		width: undefined,	// width of object
 		height: undefined,	// height of object
 		speed: 5,	// speed of object
@@ -159,7 +160,6 @@ if (!Object.toType) {
 		},
 		setImageIndex: function (index) {
 			if (index != this.imageIndex && this.images[index]) {
-
 				if (!this.imageObjects[index]) {
 					this.imageObjects[index] = new Image();
 
@@ -199,7 +199,7 @@ if (!Object.toType) {
 			b = b || this.b;
 
 			var x = parseFloat((a - b) * this.width) + 500;
-			var y = parseFloat((a + b) * this.height / 2) + this.height;
+			var y = parseFloat((a + b) * this.height / 2) + this.height - (this.z || 0);
 
 			this.setPosition(x, y);
 		}
@@ -230,7 +230,9 @@ if (!Object.toType) {
 			self.player = new global.Entities.Player();
 
 			document.addEventListener("keydown", function (e) {
-				self.keysDown[e.keyCode] = true;
+				if (typeof self.keysDown[e.keyCode] === 'undefined') {
+					self.keysDown[e.keyCode] = true;
+				}
 			}, false);
 
 			document.addEventListener("keyup", function (e) {
@@ -238,9 +240,9 @@ if (!Object.toType) {
 			}, false);
 		},
 		update: function (m) {
-			if (self.KEYS.SPACE in self.keysDown) {
+			if (self.KEYS.SPACE in self.keysDown && self.keysDown[self.KEYS.SPACE]) {
 				self.player.shoot(m);
-				delete self.keysDown[self.KEYS.SPACE];
+				self.keysDown[self.KEYS.SPACE] = false;
 			}
 			if (self.KEYS.UP in self.keysDown) {
 				self.player.moveUp(m);
@@ -285,20 +287,20 @@ if (!Object.toType) {
 				self.draw();
 				self.update(self.delta / 1000);
 				self.start();
-			});
+			}, 1000 / self.delta);
 		},
-		requestAnimationFrame: function (func) {
+		requestAnimationFrame: function (func, timeFrequency) {
 			var requestAnimationFrame;
 
 			requestAnimationFrame = (function () {
 				return (
-					window.requestAnimationFrame       ||
+					window.requestAnimationFrame ||
 					window.webkitRequestAnimationFrame ||
-					window.mozRequestAnimationFrame    ||
-					window.oRequestAnimationFrame      ||
-					window.msRequestAnimationFrame	   ||
+					window.mozRequestAnimationFrame ||
+					window.oRequestAnimationFrame ||
+					window.msRequestAnimationFrame ||
 					function(func) {
-						window.setTimeout(func, 1000 / 60);
+						window.setTimeout(func, timeFrequency);
 					}
 				);
 			}());
@@ -314,8 +316,10 @@ if (!Object.toType) {
 	'use strict';
 
 	global.Entities.Board = new Class({
+		extend: function () { return global.Entities.Entity; },
 		width: 32,
 		height: 32,
+		z: -32,
 		images: [ 'assets/images/ground1.png' ],
 		horizontalSegments: 15,
 		verticalegments: 15,
@@ -354,7 +358,7 @@ if (!Object.toType) {
 
 			for (i = this.shoots.length - 1; i >= 0; i--) {
 				if (this.shoots[i]) {
-					this.shoots[i].parent.draw.call(this.shoots[i], context);
+					this.shoots[i].draw.call(this.shoots[i], context);
 					this.shoots[i].drawShadow.call(this.shoots[i], context);
 
 					this.drawDistance(context, this.shoots[i], this);
@@ -368,8 +372,8 @@ if (!Object.toType) {
 			var d = Math.round(Math.pow(Math.sqrt(Math.abs(a.x - b.x)) + Math.sqrt(Math.abs(a.y - b.y)), 2));
 
 			// Show distance on the top of point object
-			context.font = "16px Arial";
-			context.fillText(d, a.x + a.width / 2, a.y + a.height / 2);
+			context.font = "14px Arial";
+			context.fillText(d, a.x + a.width / 1.5, a.y + a.height);
 		},
 		drawTop: function(context) {
 			this.setImageIndex(1);
@@ -403,7 +407,7 @@ if (!Object.toType) {
 		shoot: function (m) {
 			var point;
 
-			if (this.shoots.length > 10) {
+			if (this.shoots.length > 100) {
 				return;
 			}
 
@@ -427,25 +431,28 @@ if (!Object.toType) {
 	global.Entities.Point = new Class({
 		width: 32,
 		height: 32,
+		z: 16,
 		speed: 16,
-		imageObjects: [],
-		images: [ 'assets/images/point.png', 'assets/images/point-shadow.png' ],
 		init: function() {
-			this.setPositionIndexes(5, 5);
+			this.setPositionIndexes(4, 4);
 			this.prepareIndexesToPosition();
 
 			this.parent.init.call(this);
 		},
 		draw: function(context) {
-			this.prepareIndexesToPosition();
-			this.parent.draw.call(this, context);
+			context.fillStyle = '#000000';
+			context.beginPath();
+			context.arc(this.x + this.width, this.y + this.height * 1.5, 32 / 4, 0, 2 * Math.PI);
+			context.closePath();
+			context.fill();
 		},
 		drawShadow: function(context) {
-			var that = this; 
-			this.setImageIndex(1);
-			that.parent.draw.call(that, context);
-			that.setImageIndex(0);
-
+			context.fillStyle = 'rgba(0, 0, 0, 0.2)';
+			context.beginPath();
+			context.arc(this.x + this.width, this.y + this.height * 1.5 + this.z, 32 / 4, 0, 2 * Math.PI);
+			context.closePath();
+			context.fill();
+			context.fillStyle = '#000000';
 		}
 	}, global.Entities.Entity);
 })(this);
