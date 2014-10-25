@@ -20,7 +20,7 @@
 
 			for (i = this.shoots.length - 1; i >= 0; i--) {
 				if (this.shoots[i]) {
-					this.shoots[i].parent.draw.call(this.shoots[i], context);
+					this.shoots[i].draw.call(this.shoots[i], context);
 					this.shoots[i].drawShadow.call(this.shoots[i], context);
 
 					this.drawDistance(context, this.shoots[i], this);
@@ -34,8 +34,8 @@
 			var d = Math.round(Math.pow(Math.sqrt(Math.abs(a.x - b.x)) + Math.sqrt(Math.abs(a.y - b.y)), 2));
 
 			// Show distance on the top of point object
-			context.font = "16px Arial";
-			context.fillText(d, a.x + a.width / 2, a.y + a.height / 2);
+			context.font = "14px Arial";
+			context.fillText(d, a.x + a.width / 1.5, a.y + a.height);
 		},
 		drawTop: function(context) {
 			this.setImageIndex(1);
@@ -69,7 +69,7 @@
 		shoot: function (m) {
 			var point;
 
-			if (this.shoots.length > 10) {
+			if (this.shoots.length > 100) {
 				return;
 			}
 
